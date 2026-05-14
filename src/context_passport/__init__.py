@@ -14,7 +14,7 @@ from .passport import (
     SCHEMA_VERSION,
 )
 
-__version__ = "1.0.0a1"
+__version__ = "1.0.0a2"
 
 __all__ = [
     "make_passport",
@@ -25,3 +25,16 @@ __all__ = [
     "SCHEMA_VERSION",
     "__version__",
 ]
+
+
+def __getattr__(name):
+    """
+    Lazy access to signing helpers so the base package doesn't pay the
+    import cost (or hard-require the cryptography dependency) for callers
+    that never sign passports.
+    """
+    if name in {"sign_passport", "verify_signature", "generate_keypair",
+                "public_key_to_base64", "public_key_from_base64"}:
+        from . import signing
+        return getattr(signing, name)
+    raise AttributeError(f"module 'context_passport' has no attribute {name!r}")

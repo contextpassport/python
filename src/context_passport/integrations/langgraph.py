@@ -25,7 +25,7 @@ Usage:
         print(p["id"], p["event"]["type"], p["payload"]["output"])
 
 For real production usage, pass a `commit_fn` callable that persists each
-passport as it is created (e.g., POST to a DarkMatter endpoint, append to a
+passport as it is created (e.g., POST to a Context Passport receiving server, append to a
 WORM store, write to disk). The in-memory list is for development only.
 """
 

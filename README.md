@@ -11,10 +11,17 @@ A reference implementation of the [Context Passport](https://github.com/contextp
 pip install context-passport
 ```
 
-(Not yet on PyPI — install from source while v1.0 is in draft.)
+While the spec is in draft (v1.0 prerelease), pip will install the latest prerelease automatically. To pin to a specific version:
 
 ```bash
-pip install git+https://github.com/contextpassport/python.git
+pip install "context-passport==1.0.0a1"
+```
+
+For optional extras:
+
+```bash
+pip install "context-passport[signing]"        # Ed25519 signing support
+pip install "context-passport[langgraph]"      # LangChain/LangGraph callback handler
 ```
 
 ## Usage

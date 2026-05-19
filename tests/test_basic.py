@@ -11,7 +11,7 @@ def test_root_passport_has_no_parent():
     )
     assert p["parent_id"] is None
     assert p["integrity"]["parent_hash"] is None
-    assert p["schema_version"] == "1.0"
+    assert p["schema_version"] == "2.0"
 
 
 def test_chain_links_correctly():

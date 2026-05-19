@@ -14,7 +14,7 @@ pip install context-passport
 While the spec is in draft (v1.0 prerelease), pip will install the latest prerelease automatically. To pin to a specific version:
 
 ```bash
-pip install "context-passport==1.0.0a1"
+pip install "context-passport==1.0.0"
 ```
 
 For optional extras:

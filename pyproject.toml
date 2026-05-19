@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "context-passport"
-version = "1.0.0"
+version = "1.0.1"
 description = "Reference Python implementation of the Context Passport open standard for AI agent events."
 readme = "README.md"
 license = { text = "Apache-2.0" }

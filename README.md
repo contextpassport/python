@@ -1,6 +1,8 @@
 # Context Passport — Python Reference Implementation
 
-A reference implementation of the [Context Passport](https://github.com/contextpassport/spec) v1.0 specification in Python.
+A reference implementation of the [Context Passport](https://github.com/contextpassport/spec) v2.0 specification in Python.
+
+**v2.0:** Adopts RFC 8785 (JSON Canonicalization Scheme) for cross-implementation byte-equivalence. v1.x records remain verifiable via `context_passport.compat.v1`. See the [migration guide](https://github.com/contextpassport/spec/blob/main/docs/migrations/v1-to-v2.md).
 
 **Specification:** https://github.com/contextpassport/spec
 **License:** Apache-2.0

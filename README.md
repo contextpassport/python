@@ -11,13 +11,7 @@ A reference implementation of the [Context Passport](https://github.com/contextp
 pip install context-passport
 ```
 
-To pin to a specific version:
-
-```bash
-pip install "context-passport==1.0.0"
-```
-
-For optional extras:
+Optional extras:
 
 ```bash
 pip install "context-passport[signing]"        # Ed25519 signing support

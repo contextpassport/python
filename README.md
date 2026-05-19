@@ -11,7 +11,7 @@ A reference implementation of the [Context Passport](https://github.com/contextp
 pip install context-passport
 ```
 
-While the spec is in draft (v1.0 prerelease), pip will install the latest prerelease automatically. To pin to a specific version:
+To pin to a specific version:
 
 ```bash
 pip install "context-passport==1.0.0"

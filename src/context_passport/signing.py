@@ -15,8 +15,9 @@ from __future__ import annotations
 
 import base64
 import copy
-import json
 from typing import Optional, Tuple
+
+from .passport import _canonical as _canonical_jcs
 
 try:
     from cryptography.hazmat.primitives.asymmetric.ed25519 import (
@@ -47,7 +48,7 @@ def _canonical_bytes_for_signing(passport: dict) -> bytes:
         sig_block = dict(clone["signature"])
         sig_block["signature"] = ""
         clone["signature"] = sig_block
-    return json.dumps(clone, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return _canonical_jcs(clone).encode("utf-8")
 
 
 def generate_keypair() -> Tuple[Ed25519PrivateKey, Ed25519PublicKey]:

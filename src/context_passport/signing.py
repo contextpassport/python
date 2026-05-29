@@ -88,7 +88,7 @@ def sign_passport(
     Parameters
     ----------
     passport : dict
-        A Context Passport v1.0 object. Must already have its integrity hashes
+        A Context Passport object. Must already have its integrity hashes
         computed.
     private_key : Ed25519PrivateKey
         The signing key.

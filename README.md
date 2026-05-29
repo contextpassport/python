@@ -49,7 +49,7 @@ assert verify_chain([root, child])
 
 ## Conformance
 
-This implementation targets **Core conformance** with the [Context Passport v1.0 conformance test suite](https://github.com/contextpassport/conformance-tests). Signed conformance is planned.
+This implementation targets **Core conformance** with the [Context Passport v2.0 conformance test suite](https://github.com/contextpassport/conformance-tests). Signed conformance is planned.
 
 To run the conformance tests against this implementation:
 

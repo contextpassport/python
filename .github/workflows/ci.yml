@@ -1,0 +1,39 @@
+name: CI
+
+# This package is what people pip install when they adopt the standard. A
+# reference implementation that is not tested on every change is a reference
+# in name only, and a wrong hash shipped from here propagates into downstream
+# implementations as a "correct" reference.
+#
+# The full matrix is deliberate: pyproject.toml advertises 3.9 through 3.12,
+# and an advertised version that nobody runs is a promise, not a fact.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '17 6 * * 1'   # Mondays, 06:17 UTC
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.9', '3.10', '3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      # The dev extra pulls pytest plus cryptography and langchain-core, so
+      # the optional signing and LangGraph paths are actually exercised
+      # rather than silently skipped by importorskip.
+      - run: pip install -e ".[dev]"
+
+      - run: pytest -q

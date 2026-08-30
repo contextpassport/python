@@ -15,6 +15,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import re
 import secrets
 import time
 from datetime import datetime, timezone
@@ -22,6 +23,8 @@ from typing import Any, Iterable, Optional
 
 SCHEMA_URL = "https://contextpassport.com/schema/v2.json"
 SCHEMA_VERSION = "2.0"
+EVENT_TYPE_PATTERN = r"^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*$"
+EVENT_TYPE_RE = re.compile(EVENT_TYPE_PATTERN)
 
 
 def _normalize_number(n: float) -> Any:
@@ -94,6 +97,11 @@ def make_passport(
     branch_key: str = "main",
 ) -> dict:
     """Construct a v2.0 Context Passport."""
+    if not isinstance(event_type, str) or EVENT_TYPE_RE.fullmatch(event_type) is None:
+        raise ValueError(
+            f"event_type {event_type!r} is invalid; must match "
+            f"{EVENT_TYPE_PATTERN} (e.g. 'commit' or 'acme.risk_review')"
+        )
     ts = str(int(time.time() * 1000))
     hex_ = secrets.token_hex(6)
     ctx_id = f"ctx_{ts}_{hex_}"

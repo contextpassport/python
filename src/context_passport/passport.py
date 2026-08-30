@@ -58,17 +58,44 @@ def _normalize(value: Any) -> Any:
     raise TypeError(f"Value of type {type(value).__name__} is not JSON-serializable under JCS")
 
 
+def _sort_utf16(value: Any) -> Any:
+    """Reorder object keys into UTF-16 code-unit order, recursively.
+
+    RFC 8785 section 3.2.3 sorts keys by UTF-16 code unit, which is what
+    JavaScript's Array.prototype.sort does on strings. Python's sorted() and
+    json.dumps(sort_keys=True) sort by code point instead. The two agree across
+    the whole BMP and disagree above it: an astral character such as U+1F600
+    encodes to the surrogate pair D83D DE00, so it sorts *below* a BMP character
+    like U+FF01 in UTF-16 and *above* it by code point.
+
+    This used to be documented as an accepted limitation on the grounds that it
+    covers all common keys. It does not cover a payload with an emoji key, and
+    such a payload hashed differently here than in the TypeScript SDK, so a
+    record written by one failed verification in the other. That is the exact
+    outcome canonicalization exists to prevent.
+
+    Python dicts preserve insertion order, so rebuilding them in the right order
+    and serializing with sort_keys=False gives JCS ordering without hand-rolling
+    the rest of the serializer.
+    """
+    if isinstance(value, dict):
+        return {k: _sort_utf16(value[k])
+                for k in sorted(value, key=lambda s: s.encode("utf-16-be"))}
+    if isinstance(value, list):
+        return [_sort_utf16(v) for v in value]
+    return value
+
+
 def _canonical(payload: Any) -> str:
     """RFC 8785 (JCS) canonical JSON serialization.
 
-    - Keys sorted lexicographically (Python sorts by code point; equivalent to
-      JCS UTF-16 code unit order for the BMP, which covers all common keys).
+    - Keys sorted at every level by UTF-16 code unit, per RFC 8785 3.2.3.
     - No whitespace.
     - ensure_ascii=False: raw UTF-8 emission for non-ASCII characters.
     - Numbers: integer-valued floats folded to ints, NaN/Infinity rejected.
     """
-    normalized = _normalize(payload)
-    return json.dumps(normalized, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    normalized = _sort_utf16(_normalize(payload))
+    return json.dumps(normalized, sort_keys=False, ensure_ascii=False, separators=(",", ":"))
 
 
 def payload_hash(payload: Any) -> str:

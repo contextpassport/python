@@ -152,15 +152,25 @@ def make_passport(
     }
 
 
-def verify_chain(passports: Iterable[dict]) -> bool:
+def verify_chain(passports: Iterable[dict], *, check_signatures: bool = True) -> bool:
     """
     Verify that a sequence of passports forms an intact chain.
 
-    Returns True if every integrity hash matches the recomputed value,
+    Returns True if every integrity hash matches the recomputed value and,
+    for every record carrying a signature block, that signature verifies.
     False otherwise. Ignores unknown namespaced extension fields per spec.
 
     Dispatches per-record on schema_version: passports tagged "1.x" are
     verified using the v1 canonicalization shim; everything else uses v2 (JCS).
+
+    Signatures are checked by default because the hash chain binds only the
+    payload and the parent link. A record's created_by, event and trace_id can
+    be rewritten without disturbing the chain; the signature is what binds
+    them, so a signed record with a forged author must not verify. Pass
+    check_signatures=False to restore hash-only verification. Checking a
+    signature needs the signing extra: a signed record with no cryptography
+    installed raises ImportError carrying the install hint, rather than
+    silently passing.
     """
     prev: Optional[dict] = None
     for p in passports:
@@ -174,5 +184,11 @@ def verify_chain(passports: Iterable[dict]) -> bool:
         expected = integrity_hash(pay_hash, parent_int)
         if p["integrity"]["integrity_hash"] != expected:
             return False
+        if check_signatures and p.get("signature"):
+            # Imported here rather than at module level so that verifying an
+            # unsigned chain never requires the optional cryptography extra.
+            from context_passport.signing import verify_signature
+            if not verify_signature(p):
+                return False
         prev = p
     return True

@@ -19,11 +19,25 @@ on:
 jobs:
   test:
     name: Python ${{ matrix.python }}
-    runs-on: ubuntu-latest
+    # Each leg names its own image because ubuntu-latest has moved to Ubuntu
+    # 26.04, and setup-python publishes no 3.9 build for 26.04. The 3.9 leg
+    # was failing on the image alone, before any code in this package ran.
+    # 3.9 is published up to 24.04, so that one leg pins 24.04 and the rest
+    # follow the current image. Removing 3.9 instead would change what
+    # pyproject.toml advertises, which is a decision and not a CI fix.
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        include:
+          - python: '3.9'
+            runner: ubuntu-24.04
+          - python: '3.10'
+            runner: ubuntu-latest
+          - python: '3.11'
+            runner: ubuntu-latest
+          - python: '3.12'
+            runner: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
